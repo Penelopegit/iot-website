@@ -165,7 +165,6 @@ app.get("/seller", requiresAuth() , async function (req, res) {
             fileName: rows.find(r => r.groupId == row.dataId).fileName
         }))
     })
-    //this is a change
 });
 app.get("/", function (req, res) {
     res.render('index', {
