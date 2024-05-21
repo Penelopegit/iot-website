@@ -1,0 +1,149 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande',
+      'Lucida Sans', Arial, sans-serif;
+}
+
+/* Header Styles */
+header {
+    height: 80px;
+    background: linear-gradient(to bottom, #89d1bd, #f4da14);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0rem calc((100vw - 1300px) / 2);
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1); /* Subtle box shadow */
+}
+
+.logo {
+    color: #f4da14;
+    font-size: 3rem;
+    font-weight: bold;
+    font-style: italic;
+    padding: 0 4rem;
+}
+
+header a {
+    text-decoration: none;
+    color: #000;
+    padding: 0 1.5rem;
+    transition: color 0.3s ease; /* Smooth transition for links */
+}
+
+header a:hover {
+    color: #fff; 
+}
+
+
+button {
+    padding: 1rem 3rem;
+    font-size: 1rem;
+    border: none;
+    color: #f4da14;
+    background: #000;
+    cursor: pointer;
+    border-radius: 50px;
+    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.1); /* Add a shadow */
+    transition: background 0.3s ease, color 0.3s ease, transform 0.3s ease; /* Smooth transitions */
+}
+
+button:hover {
+    background: #f4da14;
+    color: #000;
+    transform: scale(1.05); /* Scale up on hover */
+}
+
+
+.hero {
+    background: #89d1bd;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    height: 95vh;
+    padding: 3rem calc((100vw - 1300px) / 2);
+}
+
+.column-left {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    color: #000;
+    padding: 0rem 2rem;
+}
+
+.column-left h1 {
+    margin-bottom: 1rem;
+    font-size: 3rem;
+}
+
+.column-left p {
+    margin-bottom: 2rem;
+    font-size: 1.5rem;
+    line-height: 1.5;
+}
+
+.column-right {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 0 rem 2 rem;
+    margin-left: 40px; 
+}
+
+.hero-image { 
+    width: 100%;
+    height: 100%;
+    border-radius: 10px; 
+    transition: transform 0.5s ease; 
+}
+
+body {
+    background-image: url('static/images/wallpaper.jpg');
+    background-size: cover; /* Κάνει την εικόνα να γεμίζει το παράθυρο του προγράμματος περιήγησης */
+    background-repeat: no-repeat; /* Αποτρέπει την επανάληψη της εικόνας */
+    overflow-y: scroll; 
+    height: 200vh;
+
+    .hero, .hero-container, .column-left, .column-right, .table-responsive {
+        background-color: transparent; /* Κάνετε τα περιεχόμενα διαφανή για να εμφανίζεται η εικόνα φόντου πίσω τους */
+    }
+
+
+
+.column-left, .table-responsive {
+    background-color: #b8baba; 
+    padding: 20px; 
+    border-radius: 10px; 
+    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px; /* Προσθήκη απόστασης από τα περιεχόμενα κάτω */
+    margin-top: 20px; 
+}
+}
+input[type="file"] {
+    padding: 0.5rem 1rem;
+    margin-bottom: 1rem;
+    margin-top: 20px; 
+    font-size: 1rem;
+    border: none;
+    color: #fff;
+    background-color: #f4da14;
+    cursor: pointer;
+    border-radius: 5px;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1); /* Add a subtle shadow */
+    transition: background-color 0.3s ease, color 0.3s ease, transform 0.3s ease;
+  }
+
+  input[type="file"]:hover {
+    background-color: #89d1bd;
+    color: #000;
+    transform: scale(1.05); /* Scale up on hover */
+  }
+  
+  
+@media screen and (max-width: 768px) {
+    .hero {
+        grid-template-columns: 1fr;
+    }
+}

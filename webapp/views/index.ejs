@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Document</title>
+  <link rel="stylesheet" href="/static/css/style.css" />
+</head>
+
+<body>
+  <%- include('./nav.ejs') %>
+  <section class="hero">
+    <div class="hero-container">
+      <div class="column-left">
+        <h1>Monetize your iot data safely</h1>
+        <p>
+          If you are interested to make your data work for you and make some money in the process sign up.
+        </p>
+
+        <button id="getStartedBtn" onclick="toggleButtons()">Get Started</button>
+      </div>
+      <div class="column-right">
+        <img src="/static/images/image-1.svg" alt="illustration" class="hero-image" />
+      </div>
+      <script type="text/javascript">
+        function toggleButtons() {
+        
+          document.getElementById("getStartedBtn").style.display = "none";
+        }
+      </script>
+    </div>
+  </section>
+</body>
+
+</html>

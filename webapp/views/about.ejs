@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About IOTips</title>
+    <link rel="stylesheet" href="/static/css/about.css" />
+</head>
+<body>
+  <%- include('./nav.ejs') %>
+    <section class="hero">
+      <div class="hero-container">
+        <div class="column-left">
+          <h1>Things you should Know!</h1>
+          <p>    
+            This page was created as part of a thesis and does not 
+            aim to monetize real iot data. So if you are looking for 
+            serious buying and selling of data, this is probably not the place for you.
+          </p>
+          <p>
+            "IoT data" is data related to the Internet of Things (IoT). 
+            IoT refers to the network of devices that connect to the Internet 
+            and exchange data with each other. These devices can be sensors, machines,
+             cars, home automation devices, buildings, or any other object that can incorporate technology to connect to the Internet.
+          </p>
+        </div>
+        <div class="column-right">
+            <img
+              src="/static/images/image-2.svg"
+              alt="illustration"
+              class="hero-image"
+            />
+          </div>
+      </div>
+    </section>
+    <%- include('partials/js.ejs') %>
+</body>
+</html>

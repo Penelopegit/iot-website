@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Title Here</title>
+    <link rel="stylesheet" href="/static/css/nav.css">
+</head>
+
+<body>
+    <nav>
+        <div class="logo">IOTips</div>
+        <div class="nav-items">
+            <a href="/">Home</a>
+            <a href="/about">About</a>
+            <div class="dropdown">
+                <a href="/">Role</a>
+                <div class="dropdown-content">
+                    <a href="/seller">Seller</a>
+                    <a href="/buyer">Buyer</a>
+                </div>
+            </div>
+            <% if (user) { %>
+                <a href="/logout">Logout (<%= user.nickname %>)</a>
+                <% } else { %>
+                    <a href="/login">Login</a>
+                    <% } %>
+        </div>
+    </nav>
+</body>
+
+</html>

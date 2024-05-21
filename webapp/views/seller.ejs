@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sell IoT Data</title>
+  <%- include("./partials/css.ejs") %>
+    <link rel="stylesheet" href="/static/css/sellerstyle.css" />
+    <link rel="stylesheet" href="/static/css/table.css" />
+</head>
+
+<body style="background-image: url('static/images/wallpaper.jpg');">
+  <%- include('./nav.ejs') %> 
+    <section class="hero">
+      <div class="hero-container">
+        <div class="column-left">
+          <h1>Upload and sell your iot data!</h1> 
+          <p>
+            You are half way there!
+          </p>
+          <form id="uploadIOTForm" action="/uploadIOTData" method="post" enctype="multipart/form-data">
+            <label for="file">Choose File: (JSON Files supported only)</label>
+            <span class="link link-primary" data-bs-toggle="popover" title="Correct format" data-bs-content="It can be for example:
+            sensorName:John ,sensorValue: 00, timestamp:2024-01-01T20:16:00Z">Need help?</span>
+            <input type="file" id="fileInput" name="file" class="form-control" accept="application/json" required />
+            <label for="description">Description:</label>
+            <input type="text" placeholder="Enter a Description here" class="form-control" name="Description"/>
+            <button class="mt-2" type="submit">Upload Now</button>
+          </form>
+        </div>
+      
+        <!-- <span><%= JSON.stringify(data) %></span> -->
+        <div class="table-responsive">
+          <table class="table table-striped">
+            <thead>
+              <tr>
+                <th>File Name</th>
+                <th>Description</th>
+                <th>Uploaded At</th>
+                <th>Download</th>
+                <th>Delete</th>
+              </tr>
+            </thead>
+            <tbody>
+              <%
+                data.forEach(row => {
+                  %>
+                    <tr>
+                      <td><%= row.fileName %></td>
+                      <td><%= row.description %></td>
+                      <td><%= row.uploadedAt %></td>
+                      <td><a target="_blank" href="/DownloadGroupData/<%= row.groupId %>">Download</a></td>
+                      <td><button class="btn btn-outline-danger deleteButton" data-group="<%= row.groupId %>" data-filename="<%= row.fileName %>">Delete</button></td>
+                    </tr>
+                  <%
+                })
+                if (!data.length) {
+                  %>
+                  <tr>
+                    <td colspan="4" class="text-center">No data available.</td>
+                  </tr>
+                  <%
+                }
+              %>
+            </tbody>
+          </table>
+        </div>
+
+
+      </div>
+      <div class="column-right">
+        <div class="table-responsive">
+          <table class="table table-sm table-striped table-hover table-striped">
+            <thead>
+              <th>File Name</th>
+              <th>Description</th>
+              <th>Purchased By</th>
+              <th>Purchased At</th>
+            </thead>
+            <tbody>
+              <%
+                purchases.forEach(row => {
+                  %>
+                    <tr>
+                      <td><%= row.fileName %></td>
+                      <td><%= row.description %></td>
+                      <td><%= row.purchasedBy %></td>
+                      <td><%= row.purchasedAt %></td>
+                    </tr>
+                  <%
+                })
+              %>
+            </tbody>
+          </table>
+        </div>
+        <!-- <img src="/static/images/image-3.svg" alt="illustration" class="hero-image" /> -->
+      </div>
+    </section
+    <%- include('partials/js.ejs') %>
+      <script>
+        function searchFunction() {
+          var input, filter, table, tr, td, i, txtValue;
+          input = document.getElementById("searchInput");
+          filter = input.value.toUpperCase();
+          table = document.getElementById("myTable");
+          tr = table.getElementsByTagName("tr");
+
+          for (i = 0; i < tr.length; i++) {
+            td = tr[i].getElementsByTagName("td")[0];
+            if (td) {
+              txtValue = td.textContent || td.innerText;
+              if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                tr[i].style.display = "";
+              } else {
+                tr[i].style.display = "none";
+              }
+            }
+          }
+        }
+      </script>
+      <script>
+        //const popoverTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="popover"]'))
+        //const popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
+        //  return new bootstrap.Popover(popoverTriggerEl)
+        //})
+
+        const uploadFileForm = document.getElementById("uploadIOTForm")
+        uploadFileForm.addEventListener("submit", async function (e) {
+          e.preventDefault()
+          const data = new FormData(uploadFileForm)
+          const response = await fetch(uploadFileForm.action, {
+            method: uploadFileForm.method,
+            body: data
+          })
+          const text = await response.text() 
+          if (response.ok) {
+            //show success message
+            await Swal.fire({
+              icon: "success",
+              title: "File Upload Completed",
+              text: text
+            })
+            location.reload()
+          } else {
+            //show error message
+            Swal.fire({
+              icon: "error",
+              title: "An error occured",
+              text: text
+            })
+          }
+        })
+
+      </script>
+      <script>
+        $(".deleteButton").on("click", async function() {
+          const fileName = $(this).data("filename")
+          const group = $(this).data("group")
+          const result = await Swal.fire({
+              icon: "info",
+              title: "Are you sure?",
+              text: `Are you sure you want to delete ${fileName} ?`,
+              showCancelButton: true
+          })
+          if (!result.isConfirmed) return 
+          $.ajax({
+              url: `/Group/${group}`,
+              method: "DELETE",
+              success: async function() {
+                await Swal.fire({
+                  icon: "success",
+                  title: "Success!",
+                  text: `${fileName} deleted successfully!`,
+                })
+                location.reload()
+              }, 
+              error: function() {
+                Swal.fire({
+                  icon: "error",
+                  tile: "An Error Occured",
+                  text: `An error occured while deleting ${fileName}`,
+                })
+              }
+          })
+        })
+      </script>
+</body>
+
+</html>

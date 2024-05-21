@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Buy IoT Data</title>
+    <%- include("./partials/css.ejs") %>
+    <link rel="stylesheet" href="/static/css/buyer.css" />
+    <link rel="stylesheet" href="/static/css/table.css" />
+</head>
+<body style="background-image: url('static/images/backbuy.jpeg');"> 
+  <%- include('./nav.ejs') %>
+    <section class="hero">     
+      <div class="hero-container">   
+        <div class="column-left">
+          <h1>Here you can buy iot data!</h1>
+          <p>
+            Take a look at the preview of the data you are interested in 
+            and read about the content of the files you want to buy.
+          </p>
+        </div>
+        <div class="table-responsive column-left mt-5">
+          <input type="text" id="searchInput" class="search-input" onkeyup="searchFunction()" placeholder="Search for devices..">
+          
+  
+            <table id="myTable" class="table table-success table-striped table-bordered table-hover ">
+              <!-- https://www.w3schools.com/howto/howto_js_filter_table.asp-->
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Origin</th>
+                  <th>Sender</th>
+                  <th>Description</th>
+                  <th>Quantity</th>
+                  <th>Price</th>
+                  <th>Download</th>
+                  <th>Buy</th>
+                </tr>
+              </thead>
+              <tbody>
+                <%
+                  data.forEach(row => {
+                    %>
+                    <tr>
+                      <td><%= row.id %></td>
+                      <td><%= row.Own ? "IOTips" : "User Submitted" %></td>
+                      <td><%= row.Sender %></td>
+                      <td><%= row.Description %></td>
+                      <td><%= row.Quantity %></td>
+                      <td><%= row.Price %></td>
+                      <td><a target="_blank" href="<%= row.Download %>">Download</a></td>
+                      <td><button class="buyBtn">Buy Now</button></td>
+                    </tr>
+                    <%
+                  })
+                %>
+              </tbody>
+            </table>
+          
+        </div>
+      </div> 
+    
+    </section>
+    <%- include('partials/js.ejs') %>
+
+    <script>
+      function searchFunction() {
+        var input, filter, table, tr, td, i, txtValue;
+        input = document.getElementById("searchInput");
+        filter = input.value.toUpperCase();
+        table = document.getElementById("myTable");
+        tr = table.getElementsByTagName("tr");
+
+        for (i = 0; i < tr.length; i++) {
+          td = tr[i].getElementsByTagName("td")[0];
+          if (td) {
+            txtValue = td.textContent || td.innerText;
+            if (txtValue.toUpperCase().indexOf(filter) > -1) {
+              tr[i].style.display = "";
+            } else {
+              tr[i].style.display = "none";
+            }
+          }
+        }
+      }
+
+      function buyNow(sender) {
+        // Implement buy now functionality here
+        console.log('Buying data from sender:', sender);
+        // You can add further logic for the payment process
+      }
+    </script>
+    
+    <script src="/static/js/table.js"></script>
+</body>
+</html>

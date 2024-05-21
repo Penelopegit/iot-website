@@ -1,0 +1,13 @@
+
+#searchInput {
+    width: 100%;
+    padding: 12px 20px 12px 40px;
+    margin-bottom: 12px;
+    border: 1px solid #ddd;
+    font-size: 16px;
+    background-image: url('/static/images/searchicon.png');
+    background-position: 10px center; 
+    background-repeat: no-repeat;
+    background-size: 30px; 
+    padding-left: 50px; 
+}
