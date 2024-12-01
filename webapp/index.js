@@ -39,7 +39,10 @@ const userRecordSchema = new mongoose.Schema(
         userId: String, 
         groupId: String,
         description: String,
-        originalFileName: String
+        originalFileName: String,
+        temporary: { type: Boolean, default: true },
+        consentId: String,
+        consentAccount: String
     },
     {
         timestamps: true,
@@ -137,7 +140,7 @@ app.get("/something_private", requiresAuth(), checkRequiredRoles(["Buyer"]), fun
 app.get("/seller", requiresAuth() , async function (req, res) {
     //find data uploaded by current user 
     const userId = req.oidc.user.name 
-    const data = await userRecordModel.find({ userId: userId})
+    const data = await userRecordModel.find({ userId: userId, temporary: false })
     const visited = new Set()
     const rows = []
     data.forEach(row => {
@@ -177,7 +180,8 @@ app.get('/DownloadGroupData/:groupId', requiresAuth(), async (req, res) => {
     const userId = req.oidc.user.name 
     const groupId = req.params.groupId
     const data = await userRecordModel.find({
-        groupId: groupId
+        groupId: groupId,
+        temporary: false
     })
     const fileName = data?.[0]?.userId == userId ? data[0].originalFileName : "data.json"
     res.setHeader("Content-Type", "application/json")
@@ -203,23 +207,32 @@ app.delete('/Group/:groupId', requiresAuth(), async (req, res) => {
     }
 })
 
+app.get('/SellerCompleted', requiresAuth(), async (req, res) => {
+    const { iot_id, consent_id, consent_acc } = req.query
+    if (!iot_id) {
+        return res.status(400).send("Bad request! Expected iot id!")
+    }
+    await userRecordModel.updateMany({ groupId: iot_id}, { temporary: false, consentId: consent_id, consentAccount: consent_acc })
+    res.redirect("/seller?consentFinished=1")
+})
+
 app.post('/uploadIOTData', requiresAuth(), upload.single('file'), async (req, res) => {
     try {
         if (!req.file) {
-            return res.status(400).send("You need to upload a file")
+            return res.status(400).json({ error: "You need to upload a file"})
         }
         let content = String(req.file.buffer)
         try {
             content = JSON.parse(content)
         } catch(parseError) {
-            return res.status(400).send("Content can't be parsed as JSON file.")
+            return res.status(400).json({ error: "Content can't be parsed as JSON file."})
         }
         if (!Array.isArray(content)) {
-            return res.status(400).send("Expected JSON array")
+            return res.status(400).json({ error: "Expected JSON array" })
         }
         const notSetValue = (val) => val === null || val === undefined || String(val).trim() === ''
         if (content.some(row => notSetValue(row.sensorName) || notSetValue(row.sensorValue))) {
-            return res.status(400).send("Each row should contain sensorName and sensorValue fields")
+            return res.status(400).json({ error: "Each row should contain sensorName and sensorValue fields"})
         }
         const userId = req.oidc.user.name
         const groupId = `${userId}${Date.now()}`
@@ -230,13 +243,18 @@ app.post('/uploadIOTData', requiresAuth(), upload.single('file'), async (req, re
             userId: userId,
             groupId: groupId,
             originalFileName: req.file.originalname,
-            description: req.body.Description || ""
+            description: req.body.Description || "",
+            temporary: true
         }))
         await userRecordModel.insertMany(content)
-        res.send("File uploaded successfully")
+        const consentURL = `${process.env.CONSENT_URL}?iot_id=${groupId}&description=${req.body.Description}`
+        res.json({
+            success: "SUCCESS",
+            redirect: consentURL
+        })
     } catch (error) {
         console.error(error)
-        res.status(500).send("Internal Server Error")
+        res.status(500).json({ error: "Internal Server Error"})
     }
 })
 
@@ -248,7 +266,7 @@ app.post("/BuyData", requiresAuth(), async function(req, res) {
         //console.log("searching on", modelToSearch, "with", dataId)
         const data = ownData == 'Y'
             ?   await sensorsModel.findById(dataId)
-            :   await userRecordModel.findOne({ groupId: dataId })
+            :   await userRecordModel.findOne({ groupId: dataId, temporary: false })
         console.log("data:", data)
         if (data == null) {
             return res.status(404).send("Error: Data not found!")
@@ -272,7 +290,7 @@ app.get("/buyer", requiresAuth(), async function (req, res) {
         userData
     ] = await Promise.all([
         sensorsModel.find({}),
-        userRecordModel.find({})
+        userRecordModel.find({ temporary: false })
     ])
     //Sender, Description, Quantity, Price, Download, Buy 
     const sensorQuantities = {} 
@@ -286,7 +304,9 @@ app.get("/buyer", requiresAuth(), async function (req, res) {
         id: r._id,
         Sender: r.sensorName,
         Description: r.description,
-        Group: r.groupId
+        Group: r.groupId,
+        consentAccount: r.consentAccount, 
+        consentId: r.consentId
     }))
     sensorData.forEach(r => {
         if (sensorQuantities.hasOwnProperty(r.Sender)) {
@@ -312,6 +332,7 @@ app.get("/buyer", requiresAuth(), async function (req, res) {
                 Price: 0.1 * userQuantities[r.Group],
                 Own: false,
                 Download: "/DownloadGroupData/" + r.Group,
+                consentURL: r.consentAccount && r.consentId >= 0 ? `${process.env.CONSENT_URL}?account=${r.consentAccount}&consent=${r.consentId}` : null,
                 id: r.Group
             }))
             .filter( r => {

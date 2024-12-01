@@ -33,6 +33,7 @@
                   <th>Description</th>
                   <th>Quantity</th>
                   <th>Price</th>
+                  <th>Consent</th>
                   <th>Download</th>
                   <th>Buy</th>
                 </tr>
@@ -48,6 +49,19 @@
                       <td><%= row.Description %></td>
                       <td><%= row.Quantity %></td>
                       <td><%= row.Price %></td>
+                      <td>
+                        <%
+                          if (row.consentURL) {
+                            %>
+                              <a target="_blank" href="<%= row.consentURL %>">View Consent</a>
+                            <%
+                          } else {
+                            %>
+                              <span>-</span>
+                            <%
+                          }
+                        %>
+                      </td>
                       <td><a target="_blank" href="<%= row.Download %>">Download</a></td>
                       <td><button class="buyBtn">Buy Now</button></td>
                     </tr>

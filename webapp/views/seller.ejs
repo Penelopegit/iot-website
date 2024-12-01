@@ -124,7 +124,15 @@
         //const popoverList = popoverTriggerList.map(function (popoverTriggerEl) {
         //  return new bootstrap.Popover(popoverTriggerEl)
         //})
-
+		const urlParams = new URLSearchParams(window.location.search)
+		const consentFinished = urlParams.get("consentFinished")
+		if (consentFinished) {
+			Swal.fire({
+				icon: "success", 
+				title: "Files Uploaded Successfully.",
+				text: "Thank you for registering your consent"
+			})
+		}
         const uploadFileForm = document.getElementById("uploadIOTForm")
         uploadFileForm.addEventListener("submit", async function (e) {
           e.preventDefault()
@@ -133,23 +141,23 @@
             method: uploadFileForm.method,
             body: data
           })
-          const text = await response.text() 
-          if (response.ok) {
-            //show success message
-            await Swal.fire({
-              icon: "success",
-              title: "File Upload Completed",
-              text: text
-            })
-            location.reload()
-          } else {
-            //show error message
-            Swal.fire({
-              icon: "error",
-              title: "An error occured",
-              text: text
-            })
-          }
+		  const json = await response.json()
+			if (response.ok && json.success) {
+				await Swal.fire({
+					icon: "info",
+					title: "File Upload Completed",
+					text: "You will be redirected to the consent form"
+				})
+				const url = json.redirect 
+				location.href = url
+			} else {
+				//show error message
+				Swal.fire({
+					icon: "error",
+					title: "An error occured",
+					text: json?.error || "Undefined Error"
+				})
+			}
         })
 
       </script>

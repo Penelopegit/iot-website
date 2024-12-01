@@ -11,6 +11,7 @@ $('#myTable').DataTable({
         { data: "Description" },
         { data: "Quantity" },
         { data: "Price" },
+        { data: "Consent" },
         { data: "Download" },
         { data: "Buy" }
     ]
